@@ -27,4 +27,5 @@
     font-weight: bold;
     border-width: 2px;
     user-select: none;
+    transition: all 0.5s ease-in-out;
 }
