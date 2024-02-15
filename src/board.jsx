@@ -1,5 +1,6 @@
 // import React from 'react';
 import { useState, useEffect } from "react";
+import { findRenderedComponentWithType } from "react-dom/test-utils";
 
 const tile_size = 100;
 const board_size = 3 * tile_size;
@@ -92,6 +93,41 @@ export default function Board() {
         }))
     }
 
+    function handleReset() {
+        // console.log("..")
+        setTiles(initialTiles);
+        setOpenTile(initialOpenTile);
+    }
+
+    function handleRandom() {
+        const map = new Map();
+        initialTiles.forEach(tile => {
+            // generate random key number
+            var key = Math.floor(Math.random() * 8)
+            while (map.has(key)) {
+                key++;
+                if (key == 9) {
+                    key = 0;
+                }
+            }
+            map.set(key, tile.num);
+        });
+        var new_tiles = [];
+        // all tiles should be set now
+        for (var i = 0; i < 9; i++) {
+            var row = Math.floor(i / 3);
+            var col = i % 3;
+            if (map.has(i)) {
+                new_tiles.push({num: map.get(i), row: row, col: col});
+            }
+            else {
+                // empty tile
+                setOpenTile({row: row, col: col});
+            }
+        }
+        setTiles(new_tiles);
+    }
+
     return (
         <div className="parent">
             <div className="board"
@@ -100,6 +136,10 @@ export default function Board() {
                 height: `${board_size}px`
             }}>
                 {tiles.map(tile => <Tile handleClick={() => handleClick(tile.num)} number={tile.num} row={tile.row} col={tile.col} key={tile.num}></Tile>)}
+            </div>
+            <div className="controls">
+                <button onClick={() => handleReset()}>RESET</button>
+                <button onClick={() => handleRandom()}>RANDOM</button>
             </div>
         </div>
     );
