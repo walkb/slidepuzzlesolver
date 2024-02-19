@@ -6,7 +6,18 @@
 
 .parent {
     display: flex;
-    justify-content: center;
+    /* justify-content: center; */
+    align-items: center;
+    flex-direction: column;
+    transition: all 1s ease-in-out;
+}
+
+.moveleft {
+    margin-right: 50%;
+}
+
+.container {
+    left: 5px;
 }
 
 .container h1 {
@@ -18,6 +29,10 @@
     position: relative;
 }
 
+.controls {
+    margin-top: 10px;
+}
+
 .tile {
     position: absolute;
     color: #DDDDDD;
@@ -27,5 +42,5 @@
     font-weight: bold;
     border-width: 2px;
     user-select: none;
-    transition: all 0.5s ease-in-out;
+    transition: all 0.25s ease-in-out;
 }

@@ -1,66 +1,82 @@
-// import React from 'react';
 import { useState, useEffect } from "react";
 import { findRenderedComponentWithType } from "react-dom/test-utils";
+
+// Constants to change board and tile size.
 
 const tile_size = 100;
 const board_size = 3 * tile_size;
 
+// Default board state
+
+const initialTiles = [
+    {num: 1, row: 0, col: 1},
+    {num: 2, row: 0, col: 2}, 
+    {num: 3, row: 1, col: 0}, 
+    {num: 4, row: 1, col: 1}, 
+    {num: 5, row: 1, col: 2}, 
+    {num: 6, row: 2, col: 0}, 
+    {num: 7, row: 2, col: 1}, 
+    {num: 8, row: 2, col: 2}
+];
+const initialOpenTile = {row: 0, col: 0}
+
+
+// |---------- BOARD SOLVER ----------------------------------------------------|
+
+// Uses A* algorithm such that f(n) = (path cost + heuristic)
+// Heuristic chosen is Manhattan distance (right angles only)
+
+// Node class
+
+// Solver function should return the path taken, which should be called by the Board class
+
+// First, initialize the root node
+
+// We know there are at most 2 and 4 different actions per state
+
+
+// |---------- REACT COMPONENTS ------------------------------------------------|
+
+// Board contains 8 tiles and information about tiles and open tile.
 export default function Board() {
-    
-    
-    const initialTiles = [
-        {num: 1, row: 0, col: 1},
-        {num: 2, row: 0, col: 2}, 
-        {num: 3, row: 1, col: 0}, 
-        {num: 4, row: 1, col: 1}, 
-        {num: 5, row: 1, col: 2}, 
-        {num: 6, row: 2, col: 0}, 
-        {num: 7, row: 2, col: 1}, 
-        {num: 8, row: 2, col: 2}
-    ];
-    const initialOpenTile = {row: 0, col: 0}
-    
+    const [solving, setSolving] = useState(false);
     const [tiles, setTiles] = useState(initialTiles)
     const [openTile, setOpenTile] = useState(initialOpenTile);
+    var className = "parent";
 
     function findOpenAdjTile(row_in, col_in) {
         var oldTile = {row: row_in, col: col_in};
-        // console.log(oldTile);
-        // console.log(openTile);
-        // left
+        // left adj is open
         if (row_in === openTile.row && col_in - 1 === openTile.col) {
             setOpenTile(oldTile);
             return "left";
         }
-        // right
+        // right adj is open
         else if (row_in === openTile.row && col_in + 1 === openTile.col) {
             setOpenTile(oldTile);
             return "right";
         }
-        // up
+        // up adj is open
         else if (row_in - 1 === openTile.row && col_in === openTile.col) {
             setOpenTile(oldTile);
             return "up";
         }
-        // down
+        // down adj is open
         else if (row_in + 1 === openTile.row && col_in === openTile.col) {
             setOpenTile(oldTile);
             return "down";
         }
-        // none
+        // no valid moves
         else {
             return "none";
         }
     }
     
     function handleClick(tile_key) {
-        // var found_tile = tiles.find(tile => tile.num === tile_key);
-        // console.log(found_tile.num);
         setTiles(tiles.map(tile => {
             if (tile.num === tile_key) {
                 // find open tile coordinates
                 var isOpen = findOpenAdjTile(tile.row, tile.col);
-                // console.log(isOpen);
                 if (isOpen === "left") {
                     return ({
                         ...tile,
@@ -93,6 +109,10 @@ export default function Board() {
         }))
     }
 
+    function handleSolve() {
+        setSolving(true);
+    }
+
     function handleReset() {
         // console.log("..")
         setTiles(initialTiles);
@@ -105,10 +125,7 @@ export default function Board() {
             // generate random key number
             var key = Math.floor(Math.random() * 8)
             while (map.has(key)) {
-                key++;
-                if (key == 9) {
-                    key = 0;
-                }
+                key = Math.floor(Math.random() * 8)
             }
             map.set(key, tile.num);
         });
@@ -129,7 +146,7 @@ export default function Board() {
     }
 
     return (
-        <div className="parent">
+        <div className={ solving ? 'parent moveleft' : 'parent'}>
             <div className="board"
             style ={{
                 width: `${board_size}px`,
@@ -137,9 +154,10 @@ export default function Board() {
             }}>
                 {tiles.map(tile => <Tile handleClick={() => handleClick(tile.num)} number={tile.num} row={tile.row} col={tile.col} key={tile.num}></Tile>)}
             </div>
-            <div className="controls">
+            <div className="controls" style={{width: '300px'}}>
                 <button onClick={() => handleReset()}>RESET</button>
                 <button onClick={() => handleRandom()}>RANDOM</button>
+                <button onClick={() => handleSolve()}>SOLVE</button>
             </div>
         </div>
     );
